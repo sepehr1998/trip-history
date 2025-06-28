@@ -2,7 +2,6 @@ import { useState } from "react";
 import WorldMap from "./components/WorldMap";
 import CountryModal from "./components/CountryModal";
 import AdminForm from "./components/AdminForm";
-import AdminModal from "./components/AdminModal.tsx";
 import TripUploadModal from "./components/TripUploadModal.tsx";
 
 function App() {
@@ -10,8 +9,6 @@ function App() {
     const [modalOpen, setModalOpen] = useState(false);
     const [hoveredCountry, setHoveredCountry] = useState(null);
     const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 });
-    const [showAdmin, setShowAdmin] = useState(false);
-    const [adminModalOpen, setAdminModalOpen] = useState(false);
     const [uploadModalOpen, setUploadModalOpen] = useState(false);
 
 
@@ -50,17 +47,11 @@ function App() {
                     <p className="text-sm opacity-80 mb-8">
                         Manage your visited countries and memories.
                     </p>
-
-                    {showAdmin && <AdminForm />}
                 </div>
 
                 <div className="text-xs opacity-60">
                     &copy; {new Date().getFullYear()} Sepehr's Travel App
                 </div>
-                <AdminModal
-                    isOpen={adminModalOpen}
-                    onClose={() => setAdminModalOpen(false)}
-                />
             </aside>
 
             {/* Main content */}
