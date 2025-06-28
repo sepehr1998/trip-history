@@ -36,16 +36,17 @@ export default function AdminForm() {
     };
 
     return (
-        <div style={{ padding: 20 }}>
-            <h2>Add New Country</h2>
-            <form onSubmit={handleSubmit}>
+        <div className="mt-4 bg-white bg-opacity-90 rounded-lg p-4 shadow-md">
+            <h3 className="text-lg font-semibold mb-2 text-blue-500">Upload Trip</h3>
+            <form onSubmit={handleSubmit} className="space-y-4">
                 <input
                     type="text"
                     placeholder="ISO A3 Code (e.g. USA)"
                     value={code}
                     onChange={(e) => setCode(e.target.value)}
                     required
-                /><br /><br />
+                    className="input"
+                />
 
                 <input
                     type="text"
@@ -53,14 +54,8 @@ export default function AdminForm() {
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     required
-                /><br /><br />
-
-                <textarea
-                    placeholder="Description"
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    required
-                /><br /><br />
+                    className="input"
+                />
 
                 <input
                     type="file"
@@ -68,9 +63,14 @@ export default function AdminForm() {
                     accept="image/*"
                     onChange={(e) => setImages(e.target.files)}
                     required
-                /><br /><br />
+                    className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4
+                        file:rounded-full file:border-0
+                        file:text-sm file:font-semibold
+                        file:bg-blue-50 file:text-blue-700
+                        hover:file:bg-blue-100"
+                />
 
-                <button type="submit">Upload</button>
+                <button className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Upload</button>
             </form>
         </div>
     );
