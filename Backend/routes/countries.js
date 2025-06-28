@@ -1,5 +1,3 @@
-// routes/countries.js
-
 const express = require("express");
 const multer = require("multer");
 const path = require("path");
@@ -7,63 +5,88 @@ const Country = require("../models/Country");
 
 const router = express.Router();
 
-// Multer config
+// Setup multer storage for uploads
 const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, "uploads/");
-    },
-    filename: function (req, file, cb) {
-        const unique = Date.now() + "-" + file.originalname;
-        cb(null, unique);
-    },
+    destination: (req, file, cb) => cb(null, "uploads/"),
+    filename: (req, file, cb) => cb(null, `${Date.now()}-${file.originalname}`),
 });
 const upload = multer({ storage });
 
-// GET single country
+// ------------------------------------------
+// GET /api/countries/:code
+// ------------------------------------------
 router.get("/:code", async (req, res) => {
     try {
         const country = await Country.findOne({ code: req.params.code.toUpperCase() });
         if (!country) return res.status(404).json({ error: "Country not found" });
         res.json(country);
-    } catch {
+    } catch (err) {
+        console.error("GET country error:", err);
         res.status(500).json({ error: "Server error" });
     }
 });
 
-// POST new country (initial setup)
+// ------------------------------------------
+// POST /api/countries
+// Add trip to existing or new country
+// ------------------------------------------
 router.post("/", upload.array("images", 10), async (req, res) => {
-    const { code, name, description } = req.body;
+    const { code, startDate, endDate, summary } = req.body;
     const imageUrls = req.files.map((file) => `uploads/${file.filename}`);
 
     try {
-        const newCountry = await Country.findOneAndUpdate(
-            { code: code.toUpperCase() },
-            {
-                name,
-                description,
-                $setOnInsert: { trips: [] },
-            },
-            { upsert: true, new: true }
-        );
-        res.json(newCountry);
+        const trip = {
+            startDate,
+            endDate,
+            summary,
+            images: imageUrls,
+        };
+
+        let country = await Country.findOne({ code: code.toUpperCase() });
+
+        if (country) {
+            country.trips.push(trip);
+        } else {
+            country = new Country({
+                code: code.toUpperCase(),
+                name: code.toUpperCase(),
+                description: "New country",
+                trips: [trip],
+            });
+        }
+
+        await country.save();
+        res.status(201).json(country);
     } catch (err) {
-        res.status(500).json({ error: "Failed to save country" });
+        console.error("POST /api/countries error:", err);
+        res.status(500).json({ error: "Failed to save trip" });
     }
 });
 
-// POST new trip for a country
+// ------------------------------------------
+// POST /api/countries/:code/trips
+// Add trip to existing country
+// ------------------------------------------
 router.post("/:code/trips", upload.array("images", 10), async (req, res) => {
     const { startDate, endDate, summary } = req.body;
-    const imagePaths = req.files.map((file) => `uploads/${file.filename}`);
+    const imageUrls = req.files.map((file) => `uploads/${file.filename}`);
 
     try {
         const country = await Country.findOne({ code: req.params.code.toUpperCase() });
         if (!country) return res.status(404).json({ error: "Country not found" });
 
-        country.trips.push({ startDate, endDate, summary, images: imagePaths });
+        const trip = {
+            startDate,
+            endDate,
+            summary,
+            images: imageUrls,
+        };
+
+        country.trips.push(trip);
         await country.save();
         res.status(201).json(country);
     } catch (err) {
+        console.error("POST /:code/trips error:", err);
         res.status(500).json({ error: "Failed to add trip" });
     }
 });

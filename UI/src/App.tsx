@@ -3,6 +3,7 @@ import WorldMap from "./components/WorldMap";
 import CountryModal from "./components/CountryModal";
 import AdminForm from "./components/AdminForm";
 import AdminModal from "./components/AdminModal.tsx";
+import TripUploadModal from "./components/TripUploadModal.tsx";
 
 function App() {
     const [countryData, setCountryData] = useState(null);
@@ -11,6 +12,7 @@ function App() {
     const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 });
     const [showAdmin, setShowAdmin] = useState(false);
     const [adminModalOpen, setAdminModalOpen] = useState(false);
+    const [uploadModalOpen, setUploadModalOpen] = useState(false);
 
 
     const handleCountryClick = async (geo) => {
@@ -34,11 +36,16 @@ function App() {
                 <div>
                     <h2 className="text-2xl font-bold mb-6">🌍 Travel Admin</h2>
                     <button
-                        onClick={() => setAdminModalOpen(true)}
                         className="w-full bg-white text-blue-800 font-semibold py-2 px-4 rounded-lg mb-4 hover:bg-blue-100 transition"
+                        onClick={() => setUploadModalOpen(true)}
                     >
                         Upload New Trip
                     </button>
+
+                    <TripUploadModal
+                        isOpen={uploadModalOpen}
+                        onClose={() => setUploadModalOpen(false)}
+                    />
 
                     <p className="text-sm opacity-80 mb-8">
                         Manage your visited countries and memories.
