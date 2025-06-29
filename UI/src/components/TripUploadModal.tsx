@@ -1,10 +1,12 @@
-import React, { useState } from "react";
+import { useState } from "react";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 function TripUploadModal({ isOpen, onClose }) {
     const [formData, setFormData] = useState({
         code: "",
-        startDate: "",
-        endDate: "",
+        startDate: null,
+        endDate: null,
         summary: "",
         images: [],
     });
@@ -23,6 +25,8 @@ function TripUploadModal({ isOpen, onClose }) {
 
         const payload = new FormData();
         Object.entries(formData).forEach(([key, value]) => {
+            payload.append("startDate", formData.startDate.toISOString().split("T")[0]);
+            payload.append("endDate", formData.endDate.toISOString().split("T")[0]);
             if (key === "images") {
                 for (let file of value) {
                     payload.append("images", file);
@@ -66,22 +70,22 @@ function TripUploadModal({ isOpen, onClose }) {
                     className="w-full border rounded px-3 py-2"
                 />
 
-                <div className="flex gap-4">
-                    <input
-                        type="date"
-                        name="startDate"
-                        value={formData.startDate}
-                        onChange={handleChange}
+                <div className="flex gap-4 justify-between">
+                    <DatePicker
+                        selected={formData.startDate}
+                        onChange={(date) => setFormData((p) => ({ ...p, startDate: date }))}
+                        placeholderText="Start Date"
+                        className="w-full border rounded px-3 py-2"
+                        dateFormat="yyyy-MM-dd"
                         required
-                        className="w-1/2 border rounded px-3 py-2"
                     />
-                    <input
-                        type="date"
-                        name="endDate"
-                        value={formData.endDate}
-                        onChange={handleChange}
+                    <DatePicker
+                        selected={formData.endDate}
+                        onChange={(date) => setFormData((p) => ({ ...p, endDate: date }))}
+                        placeholderText="End Date"
+                        className="w-full border rounded px-3 py-2"
+                        dateFormat="yyyy-MM-dd"
                         required
-                        className="w-1/2 border rounded px-3 py-2"
                     />
                 </div>
 
